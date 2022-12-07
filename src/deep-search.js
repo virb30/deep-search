@@ -1,46 +1,33 @@
 const _ = require('lodash');
 
 const deepSearch = (options = [], term = '') => {
-
-    const flattenedOptions = flattenArray(options);
-    const filteredOptions = flattenedOptions.filter((item) => item.label.toLowerCase().includes(term.toLowerCase()));
-    const result = flattenedOptions.filter((item) => {
-        // TODO: não está correto
-        return filteredOptions.some(option => option.id === item.id || (option.parent_id === item.id && item.depth === option.depth - 1))
+    const filtered = options.filter((item) => {
+        item.children = deepSearch(item.children, term)
+        return item.label.toLowerCase().includes(term.toLowerCase()) || !_.isEmpty(item.children)
     })
-    return unflattenArray(result);
+    return filtered
+
+
+
+
+    // const flattenedOptions = flattenArray(options);
+    // const filteredOptions = flattenedOptions.filter((item) => item.label.toLowerCase().includes(term.toLowerCase()));
+    // return filteredOptions.map((option) => {
+    //     return restoreHierarchy(option, flattenedOptions);
+    // });
 }
 
-const unflattenArray = (flattenArray = []) => {
-    const orderedArray = flattenArray.sort((a, b) => a.depth - b.depth);
-    let option = null
-    const result = []
-    // TODO: refatorar
-    do {
-        option = orderedArray.pop()
-        if (!option) {
-            break;
-        }
-        const { depth, ...restOption } = option
-        if (option && option.parent_id === 0) {
-            const exists = result.find(item => item.id === option.id)
-            if (!exists) {
-                result.push({ ...restOption })
-            }
-        } else {
-            let parent = orderedArray.find(item => item.id === option.parent_id && item.depth === option.depth - 1)
-            if (parent) {
-                const children = parent.children || [];
-                parent = {
-                    ...parent,
-                    children: [...children, { ...restOption }]
-                }
-                const { depth, ...rest } = parent
-                result.push({ ...rest })
-            }
-        }
-    } while (option)
-    return result
+const restoreHierarchy = (option, original = []) => {
+    if (!option) {
+        return null
+    }
+
+    if (option.parent_id === 0) {
+        return option
+    }
+
+    const parent = original.find(item => item.id === option.parent_id && item.depth === option.depth - 1)
+    return restoreHierarchy(parent, original)
 }
 
 const flattenArray = (source = [], result = [], depth = 0) => {
