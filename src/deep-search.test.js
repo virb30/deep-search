@@ -3,7 +3,7 @@ const { deepSearch } = require("./deep-search");
 const options = [
     {
         id: 1,
-        label: "Clima e Engajamento",
+        label: "Engajamento e clim",
         children: [
             {
                 id: 11,
@@ -44,11 +44,11 @@ const options = [
 ];
 
 test("Deve filtrar as opções de maneira rasa", () => {
-    const filteredOptions = deepSearch(options, "Clima e");
+    const filteredOptions = deepSearch(options, "e clim");
     const expected = [
         {
             id: 1,
-            label: "Clima e Engajamento",
+            label: "Engajamento e clim",
         },
     ];
 
@@ -90,7 +90,7 @@ test("Deve filtrar mais de uma opção de maneira profunda", () => {
     const expected = [
         {
             id: 1,
-            label: "Clima e Engajamento",
+            label: "Engajamento e clim",
             children: [
                 {
                     id: 11,
@@ -112,7 +112,7 @@ test("Deve filtrar uma opção de maneira profunda nível 3", () => {
     const expected = [
         {
             id: 1,
-            label: "Clima e Engajamento",
+            label: "Engajamento e clim",
             children: [
                 {
                     id: 11,
